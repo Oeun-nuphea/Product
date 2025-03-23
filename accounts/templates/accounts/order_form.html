@@ -1,0 +1,140 @@
+{% extends 'accounts/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card card-body shadow-sm p-4">
+                <h3 class="text-center mb-4">Create Order for {{ customer.name }}</h3>
+
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form action="" method="POST" id="order-form">
+                    {% csrf_token %}
+                    {{ form.management_form }}
+
+                    <div id="form-container" class="form-container">
+                        {% for form in form %}
+                            <div class="form-row">
+                                {{ form.as_p }}
+                                <button type="button" class="delete-form btn btn-danger btn-sm">Remove</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Add More button -->
+                    <button type="button" id="add-form" class="btn btn-success btn-add">Add More</button>
+
+                    <br><br>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg px-4 py-3 w-100">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-container {
+        margin-bottom: 20px;
+    }
+    
+    .form-row {
+        border: 1px solid #eee;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        position: relative;
+    }
+    
+    .form-row .form-group {
+        margin-bottom: 10px;
+    }
+    
+    .delete-form {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .messages {
+        margin-bottom: 20px;
+    }
+    
+    .btn-add {
+        margin-bottom: 20px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addButton = document.getElementById('add-form');
+        const formContainer = document.getElementById('form-container');
+        const form = document.getElementById('order-form');
+        const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+
+        // Add new form
+        addButton.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            const currentFormCount = parseInt(totalForms.value);
+            const newForm = formContainer.lastElementChild.cloneNode(true);
+            
+            // Reset values and update indices
+            const inputs = newForm.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.type !== 'button') {
+                    input.value = '';
+                    const name = input.name.replace(`-${currentFormCount-1}`, `-${currentFormCount}`);
+                    input.name = name;
+                    input.id = name.replace(/-/g, '_');
+                }
+            });
+            
+            formContainer.appendChild(newForm);
+            totalForms.value = currentFormCount + 1;
+        });
+
+        // Remove form
+        formContainer.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-form')) {
+                e.preventDefault();
+                const formRows = formContainer.querySelectorAll('.form-row');
+                if (formRows.length > 1) {  // Prevent removing the last form
+                    e.target.parentElement.remove();
+                    totalForms.value = parseInt(totalForms.value) - 1;
+                }
+            }
+        });
+
+        // Validate before submission
+        form.addEventListener('submit', function(e) {
+            const forms = formContainer.querySelectorAll('.form-row');
+            let hasData = false;
+            
+            forms.forEach(form => {
+                const inputs = form.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if (input.value && input.type !== 'button') {
+                        hasData = true;
+                    }
+                });
+            });
+            
+            if (!hasData) {
+                e.preventDefault();
+                alert('Please add at least one order with product and status.');
+            }
+        });
+    });
+</script>
+{% endblock %}

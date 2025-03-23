@@ -1,0 +1,72 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <img src="{% static 'images/image.png' %}" alt="" width="50" height="50" class="rounded-image">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        {% if request.user.is_staff %}
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'home' %}">Dashboard</a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="{% url 'product' %}">Product</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'account' %}">Settings</a>
+        </li>
+        {% endif %}
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+
+    <div class="user-info">
+        <span class="user-greeting">Hello, {{ request.user }}</span>
+        <span class="logout-link"><a href="{% url 'logout' %}">Logout</a></span>
+    </div>
+</nav>
+
+<style>
+    :root {
+        --neon-blue: #00f0ff;
+        --neon-pink: #ff00ff;
+        --glow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-pink);
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px; /* Adds space between greeting and logout */
+        margin-left: 20px; /* Space from the search form */
+    }
+
+    .user-greeting {
+        color: var(--neon-blue);
+        font-size: 16px;
+        text-shadow: var(--glow);
+    }
+
+    .logout-link a {
+        color: var(--neon-pink);
+        font-size: 16px;
+        text-decoration: none;
+        text-shadow: 0 0 5px var(--neon-pink);
+        transition: color 0.3s ease, text-shadow 0.3s ease;
+    }
+
+    .logout-link a:hover {
+        color: var(--neon-blue);
+        text-shadow: 0 0 10px var(--neon-blue);
+    }
+
+    /* Add the rounded image class */
+    .rounded-image {
+        border-radius: 50%; /* This will make the image round */
+    }
+</style>
