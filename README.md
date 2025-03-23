@@ -1,1 +1,1 @@
-haha
+Django Project
